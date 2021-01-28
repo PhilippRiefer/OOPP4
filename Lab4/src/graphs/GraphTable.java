@@ -6,8 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.URL;
+import java.sql.Time;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -43,7 +48,7 @@ public class GraphTable extends JFrame implements ActionListener {
 
 		table = new JTable(model);
 
-		cnt.add(new JSctollPane(table));
+		cnt.add(new JScrollPane(table));
 		cnt.add(load);
 		cnt.add(save);
 
@@ -59,14 +64,14 @@ public class GraphTable extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent ae) {
-		if (ae.getSource() == load) {
+		if (ae.getSource() == load) {// maybe cities5.grp is empty or this shit doesnt work
 			
 			JFileChooser fc = new JFileChooser();
 			fc.setCurrentDirectory(new File("."));
 			fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			fc.setMultiSelectionEnabled(false);
 
-			if (fc.showOpenDialog(this) == JFlieChooser.APPROVE_OPTION) {
+			if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 				File loadFrom = fc.getSelectedFile();
 				ObjectInputStream in = null;
 				try {
@@ -89,8 +94,37 @@ public class GraphTable extends JFrame implements ActionListener {
 				}
 			}
 		}
-		if (ae.getSource() == save) {
+		if (ae.getSource() == save) {// this works
 			System.out.println("Supercooler Speichervorgang yo");
+			try {
+				
+				// parent component of the dialog
+				JFrame parentFrame = new JFrame();
+
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("Specify a file to save");   
+
+				int userSelection = fileChooser.showSaveDialog(parentFrame);
+
+				if (userSelection == JFileChooser.APPROVE_OPTION) {
+				    File fileToSave = fileChooser.getSelectedFile();
+					System.out.println("Speichern als: " + fileToSave.getAbsolutePath() + ".grp");
+					FileOutputStream fos = new FileOutputStream(fileToSave.getAbsolutePath() + ".grp");
+					ObjectOutputStream oos = new ObjectOutputStream(fos);
+					oos.writeObject(this.model);// havent really understood what to save here, but the process works, meaning theoretically, if you know what to save, you can save it.
+					oos.close();
+					fos.close();
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			} /*finally {
+				try {
+					System.out.println("fos.close();");// rheinwerk computing says i should do fos.close(); here, but it cant resolve fos
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}*/
 		}
 	}
 }
