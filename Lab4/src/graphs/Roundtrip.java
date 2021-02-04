@@ -1,11 +1,14 @@
 package graphs;
 
+import java.util.ArrayList;
+
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 
 public class Roundtrip {
   private GraphWithWeightedEdges distances;
   private JTextArea textArea;
+  private Thread[] threads;
   
   protected static int minsum = -1;     // minimum travel distance
   protected static long minindex = -1;  // index of the shortest travel found so far 
@@ -119,8 +122,10 @@ public class Roundtrip {
    * @param n the number of cities to visit
    * @param go 
    */
-  public void compute(int n, JButton go) {
+  public void compute(int n, JButton go, int numberOfThreads) {
 
+
+    threads = new Thread[numberOfThreads];
     go.setEnabled(false);
     addOutput("");
     addOutput("=================================================");
@@ -131,23 +136,33 @@ public class Roundtrip {
 
     minsum = -1;
     minindex = -1;
-
-    for (long k = 0; k < end; k++) {  // check all trips
-      // it shall be a trip starting in city[0]
-      if (k % n == 0) {
-        int[] perm = permutation(n,k);
-        int sum = 0;
-
-        for (int i = 0; i < n; i++) { // for all cities visited
-          int j = (i + 1) % n;        // j is next city. Last one is the first one
-          sum += distance(perm[i],perm[j]); // summing up the distance from i to j
+    for (int i = 0; i < numberOfThreads; i++) {
+      int beginning = (int)((end/numberOfThreads)*i);
+      int ending = (int)((end/numberOfThreads)*i+1);
+      threads[i] = new Thread() {
+        public void run() {
+          for (long k = beginning; k < ending; k++) {  // check all trips
+            // it shall be a trip starting in city[0]
+            Object obj = new Object();
+            synchronized(obj){
+              if (k % n == 0) {
+              int[] perm = permutation(n,k);
+              int sum = 0;
+                for (int m = 0; m < n; m++) { // for all cities visited
+                  int j = (m + 1) % n;        // j is next city. Last one is the first one
+                  sum += distance(perm[m],perm[j]); // summing up the distance from i to j
+                }
+                // now check whether this trip is shorter than current minimum
+                if (minsum > sum || minsum == -1) { // shorter OR first trip analysed
+                  minsum = sum; // remember the travel distance
+                  minindex = k; // remember the index
+                }
+              }
+            }
+          }
         }
-        // now check whether this trip is shorter than current minimum
-        if (minsum > sum || minsum == -1) { // shorter OR first trip analysed
-          minsum = sum; // remember the travel distance
-          minindex = k; // remember the index
-        }
-      }
+      };
+      threads[i].start();
     }
     // stop timing
     long duration = System.currentTimeMillis() - starttime;

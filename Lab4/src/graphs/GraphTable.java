@@ -179,35 +179,13 @@ public class GraphTable extends JFrame implements ActionListener, TableModelList
 		if (ae.getSource() == go) {
 			Roundtrip trip = new Roundtrip(model.getGraph(), text);
 
-			//TODO more threads!!!!!!!!!!
-			// but not like this
-
-			threads[(int)selectThreads.getSelectedItem()] = new Thread() {
-				public void run() {
-					long threadsum = 0;
-					for (long i = 0; i < (int)selectThreads.getSelectedItem(); i++) {
-						//berechnung
-					}
-					synchronized () {
-						//synchronisierung
-					}
-				}
-			}
-
-
-
-
-
-
-			for (int i = 0; i < (int)selectThreads.getSelectedItem(); i++) {
-				Thread t = new Thread () { // only one thread
-					public void run () {
-						trip.compute((int)selectCities.getSelectedItem(), go);
- 					}
-				};
-				t.start();
-			}
-
+		
+			Thread t = new Thread () { // only one thread
+				public void run () {
+					trip.compute((int)selectCities.getSelectedItem(), go, (int)selectThreads.getSelectedItem());
+ 				}
+			};
+			t.start();
 		}
 	}
 
