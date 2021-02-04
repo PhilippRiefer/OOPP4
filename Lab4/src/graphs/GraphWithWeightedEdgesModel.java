@@ -54,7 +54,7 @@ public class GraphWithWeightedEdgesModel extends AbstractTableModel {
 				case 4: 
 					return "Hamburg";
 				default:
-					return 0;
+					return "trying something";
 				}
 			default:
 				return 0;

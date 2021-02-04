@@ -10,9 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.URL;
-import java.sql.Time;
-import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -94,7 +91,7 @@ public class GraphTable extends JFrame implements ActionListener {
 				}
 			}
 		}
-		if (ae.getSource() == save) {// this works
+		if (ae.getSource() == save) {// this doesnt work
 			System.out.println("Supercooler Speichervorgang yo");
 			try {
 				
@@ -102,7 +99,7 @@ public class GraphTable extends JFrame implements ActionListener {
 				JFrame parentFrame = new JFrame();
 
 				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setDialogTitle("Specify a file to save");   
+				fileChooser.setDialogTitle("Specify a file to save");
 
 				int userSelection = fileChooser.showSaveDialog(parentFrame);
 
@@ -111,20 +108,20 @@ public class GraphTable extends JFrame implements ActionListener {
 					System.out.println("Speichern als: " + fileToSave.getAbsolutePath() + ".grp");
 					FileOutputStream fos = new FileOutputStream(fileToSave.getAbsolutePath() + ".grp");
 					ObjectOutputStream oos = new ObjectOutputStream(fos);
-					oos.writeObject(this.model);// havent really understood what to save here, but the process works, meaning theoretically, if you know what to save, you can save it.
+					oos.writeObject(this.model);
 					oos.close();
 					fos.close();
 				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
-			} /*finally {
+			} finally {
 				try {
-					System.out.println("fos.close();");// rheinwerk computing says i should do fos.close(); here, but it cant resolve fos
+					//fos.close();// rheinwerk computing says i should do fos.close(); here, but it cant resolve fos (http://openbook.rheinwerk-verlag.de/javainsel9/javainsel_17_010.htm , absatz ObjectOutputStream)
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}*/
+			}
 		}
 	}
 }
