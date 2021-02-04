@@ -18,17 +18,24 @@ public class GraphWithWeightedEdgesModel extends AbstractTableModel {
 	}
 	
 	public Class getColumnClass(int col) {
-		return getClass();
+		System.out.println("Called with "+col);
+		switch(col) {
+			case 0: return String.class;
+			default: return Integer.class;
+		}
 	}
 	
 	@Override
 	public int getColumnCount() {
-		return graph.getN();
+		return graph.getN()+1;
 	}
 
 	public String getColumnName(int col) {
-		String columnName[] = {"Knoten", "Berlin", "Bremen", "Dresden", "Frankfurt", "Hamburg"};
-		return columnName[col];
+		if (col == 0) {
+			return "";
+		} else {
+			return graph.getName(col-1);
+		}
 	}
 
 	@Override

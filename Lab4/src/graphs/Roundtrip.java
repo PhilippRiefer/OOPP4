@@ -133,8 +133,8 @@ public class Roundtrip {
     minindex = -1;
 
     for (long k = 0; k < end; k++) {  // check all trips
-      // it shall be a trip starting in city[0] 
-      if (k % n == 0) {  
+      // it shall be a trip starting in city[0]
+      if (k % n == 0) {
         int[] perm = permutation(n,k);
         int sum = 0;
 
@@ -149,7 +149,7 @@ public class Roundtrip {
         }
       }
     }
-    // stop timing 
+    // stop timing
     long duration = System.currentTimeMillis() - starttime;
 
     // print result
