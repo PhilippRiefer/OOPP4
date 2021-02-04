@@ -121,6 +121,7 @@ public class Roundtrip {
    * Compute the shortest round trip for n cities.
    * @param n the number of cities to visit
    * @param go 
+   * @param numberOfThreads the number of threads used to calculate stuff
    */
   public void compute(int n, JButton go, int numberOfThreads) {
 
@@ -137,32 +138,39 @@ public class Roundtrip {
     minsum = -1;
     minindex = -1;
     for (int i = 0; i < numberOfThreads; i++) {
-      int beginning = (int)((end/numberOfThreads)*i);
-      int ending = (int)((end/numberOfThreads)*i+1);
+      long beginning = i*(long)(end/numberOfThreads);
+      long ending = (i+1)*(long)(end/numberOfThreads);
       threads[i] = new Thread() {
-        public void run() {
-          for (long k = beginning; k < ending; k++) {  // check all trips
-            // it shall be a trip starting in city[0]
-            Object obj = new Object();
-            synchronized(obj){
-              if (k % n == 0) {
-              int[] perm = permutation(n,k);
-              int sum = 0;
-                for (int m = 0; m < n; m++) { // for all cities visited
-                  int j = (m + 1) % n;        // j is next city. Last one is the first one
-                  sum += distance(perm[m],perm[j]); // summing up the distance from i to j
-                }
-                // now check whether this trip is shorter than current minimum
-                if (minsum > sum || minsum == -1) { // shorter OR first trip analysed
-                  minsum = sum; // remember the travel distance
-                  minindex = k; // remember the index
-                }
-              }
-            }
-          }
-        }
-      };
-      threads[i].start();
+				public void run() {
+					long tminsum = -1; // minsum and min index for thread sums to compare to
+					long tminindex = -1;
+					for (long k = beginning; k < ending; k++) { // check all trips
+						// it shall be a trip starting in city[0]
+						if (k % n == 0) {
+							int[] perm = permutation(n, k);
+							int sum = 0;
+
+							for (int i = 0; i < n; i++) { // for all cities visited
+								int j = (i + 1) % n; // j is next city. Last one is the first one
+								sum += distance(perm[i], perm[j]); // summing up the distance from i to j
+							}
+							// now check whether this trip is shorter than current minimum
+							if (tminsum > sum || tminsum == -1) { // shorter OR first trip analysed
+								tminsum = sum; // remember the travel distance
+								tminindex = k; // remember the index
+							}
+						}
+					}
+					synchronized (Roundtrip.this) { // synchronising threads
+						if (minsum > tminsum || minsum == -1) { // shorter OR first trip analysed
+							minsum = (int) tminsum; // remember the travel distance
+							minindex = tminindex; // remember the index
+						}
+					}
+				}
+
+			};
+			threads[i].start();
     }
     // stop timing
     long duration = System.currentTimeMillis() - starttime;
