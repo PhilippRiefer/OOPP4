@@ -1,7 +1,5 @@
 package graphs;
 
-import java.util.Vector;
-
 import javax.swing.table.AbstractTableModel;
 
 public class GraphWithWeightedEdgesModel extends AbstractTableModel {
@@ -11,21 +9,21 @@ public class GraphWithWeightedEdgesModel extends AbstractTableModel {
 
 	// constructor
 	public GraphWithWeightedEdgesModel(GraphWithWeightedEdges graph) {
-		graph = this.graph;
+		this.graph = graph;
 	}
-
+	
 	// methods
 	public GraphWithWeightedEdges getGraph() {
-		return graph;
+		return this.graph;
 	}
-
+	
 	public Class getColumnClass(int col) {
 		return getClass();
 	}
-
+	
 	@Override
 	public int getColumnCount() {
-		return 6;
+		return graph.getN();
 	}
 
 	public String getColumnName(int col) {
@@ -35,29 +33,15 @@ public class GraphWithWeightedEdgesModel extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return 5;
+		return graph.getN();
 	}
 
 	@Override
 	public Object getValueAt(int row, int col) {
-		switch (col) {
-			case 0:
-				switch (row) {
-				case 0:
-					return "Berlin";
-				case 1:
-					return "Bremen";
-				case 2:
-					return "Dresden";
-				case 3:
-					return "Frankfurt";
-				case 4: 
-					return "Hamburg";
-				default:
-					return "trying something";
-				}
-			default:
-				return 0;
+		if (col == 0) {
+			return graph.getName(row);
+		}else {
+			return graph.getWeight(row, col-1);
 		}
 	}
 }

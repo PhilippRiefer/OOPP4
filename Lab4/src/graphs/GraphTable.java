@@ -12,18 +12,24 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.event.TableModelListener;
 
-public class GraphTable extends JFrame implements ActionListener {
+public class GraphTable extends JFrame implements ActionListener, TableModelListener {
 
 	// attributes
 	private JTable table;
 	private GraphWithWeightedEdgesModel model;
 	private JButton load;
 	private JButton save;
+	private JTextArea resultArea;
+	private JComboBox numberCitiesBox;
+	private JButton goButton;
 
 	// constructor
 	public GraphTable() {
@@ -37,6 +43,7 @@ public class GraphTable extends JFrame implements ActionListener {
 		} catch (WrongEdgeMatrixException e) {
 			e.printStackTrace();
 		}
+		model.addTableModelListener(this);
 		
 		load = new JButton("Load");
 		save = new JButton("Save");
@@ -45,9 +52,25 @@ public class GraphTable extends JFrame implements ActionListener {
 
 		table = new JTable(model);
 
+		resultArea = new JTextArea("test",1,1);
+
+		String numbers[] = {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
+
+		for (int i = 2; i < 31; i++) {
+			numbers[i-2] = Integer.toString(i);
+		}
+
+		numberCitiesBox = new JComboBox(numbers);
+
+		goButton = new JButton("go! do something!!");
+		goButton.addActionListener(this);
+
 		cnt.add(new JScrollPane(table));
 		cnt.add(load);
 		cnt.add(save);
+		cnt.add(numberCitiesBox);
+		cnt.add(goButton);
+		cnt.add(resultArea);
 
 		setSize(700,400);
 		setLocation(500,300);
@@ -69,12 +92,12 @@ public class GraphTable extends JFrame implements ActionListener {
 			fc.setMultiSelectionEnabled(false);
 
 			if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-				File loadFrom = fc.getSelectedFile();
-				ObjectInputStream in = null;
-				try {
-					in = new ObjectInputStream(new FileInputStream(loadFrom));
-					model = new GraphWithWeightedEdgesModel((GraphWithWeightedEdges)in.readObject());
-					table.setModel(model);
+			File loadFrom = fc.getSelectedFile();
+			ObjectInputStream in = null;
+			try {
+				in = new ObjectInputStream(new FileInputStream(loadFrom));
+				model = new GraphWithWeightedEdgesModel((GraphWithWeightedEdges)in.readObject());
+				table.setModel(model);
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {
@@ -122,6 +145,9 @@ public class GraphTable extends JFrame implements ActionListener {
 					e.printStackTrace();
 				}
 			}
+		}
+		if (ae.getSource() == goButton) {
+			//TODO calculate shit
 		}
 	}
 }
