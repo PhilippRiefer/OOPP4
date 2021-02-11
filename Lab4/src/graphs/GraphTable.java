@@ -103,8 +103,19 @@ public class GraphTable extends JFrame implements ActionListener, TableModelList
 
 		add(panel);
 
-		setSize(700, 700);
-		setLocation(500, 300);
+		// make the window beautiful
+		pack();
+		setDefaultCloseOperation(EXIT_ON_CLOSE); // close-button behaviour
+		int frameSizeWidth = getSize().width;
+		int frameSizeHeight = getSize().height;
+		setSize(frameSizeWidth, frameSizeHeight); // start with this
+		setResizable(true);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Double x = screenSize.getWidth() / 2 - (frameSizeWidth/2);
+		Double y = screenSize.getHeight() / 2 - (frameSizeHeight/2);
+		setLocation(x.intValue(), y.intValue());
+
+		// showtime!
 		setVisible(true);
 	}
 
